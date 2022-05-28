@@ -7,17 +7,18 @@ let totalImages = 0;
 let photosArray = [];
 
 // Unsplash API
-const count = 30;
+let count = 5;
 const apiKey = 'RctfD7JCK10h5J1s_mbAiBr9YSVV7dP4SVthqGEN2Dg';
-const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${apiKey}&YOUR_ACCESS_KEY&count=${count}`;
+let apiUrl = `https://api.unsplash.com/photos/random/?client_id=${apiKey}&count=${count}`;
 
 //check if all images were loaded
 function imageLoaded() {
-    console.log('image loaded');
     imagesLoaded++;
     if(imagesLoaded === totalImages){
         ready = true;
-        console.log('ready =', ready);
+        loader.hidden = true;
+        count = 30;
+        apiUrl = `https://api.unsplash.com/photos/random?client_id=${apiKey}&count=${count}`;
     }
 }
 
@@ -33,8 +34,8 @@ function setAttributes(element, atrributes) {
 // create element for links & photos, add to DOM
 function displayPhotos(){
 
+    imageLoaded = 0;    
     totalImages = photosArray.length;
-    console.log('total images ', totalImages);
 
     //run function for each object in photosArray
     photosArray.forEach((photo) => {
@@ -63,7 +64,7 @@ function displayPhotos(){
             title: photo.alt_description,
         });
         //event listener, check when each is finished loading
-
+        img.addEventListener('load', imageLoaded);
 
         //put <img> inside <a>, then put both inside imageContainer element
         item.appendChild(img);
@@ -84,8 +85,9 @@ async function getPhotos(){
 
 // checj to see if scrolling near bottom of page, load more photos
 window.addEventListener('scroll', () => {
-   if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
-      
+   if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000 && ready) {
+       
+       ready = false; 
        getPhotos();
    } 
 });
